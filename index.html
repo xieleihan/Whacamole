@@ -1,0 +1,262 @@
+<!-- Copyright©  2023 By SouthAki All Rights Reserved. -->
+<!-- 请勿删除此版权信息 -->
+<!-- 允许非商业用途，可以修改，作为学习使用 -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta content="telephone=no,email=no" name="format-detection">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <meta name="keywords" content="打地鼠小游戏" />
+    <meta name="description" content="一个自己动手做的打地鼠小游戏" />
+    <link rel="shortcut icon" href="Game.ico">
+    <title>打地鼠</title>
+    <style>
+        .main {
+            width: 400px;
+            height: 500px;
+            margin: 15px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        ul {
+            margin: 0;
+            width: 300px;
+            height: 300px;
+            /* 使其浮动 */
+            display: flex;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        ul li {
+            width: 100px;
+            height: 100px;
+            background-color: green;
+            /* 在一个盒子里嵌入另一个盒子 */
+            box-sizing: border-box;
+            background-clip: content-box;
+            border-radius: 50%;
+            padding: 10px;
+            /* 加入动画 */
+            transition: all .5s;
+        }
+
+        .active {
+            background-color: red;
+        }
+
+        button {
+            width: 100px;
+            height: 30px;
+            background-color: blue;
+            border-radius: 10px;
+            margin: 10px auto;
+            font-size: 16px;
+            cursor: pointer;
+            color: white;
+            border: none;
+            outline: none;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            font-family: zk;
+        }
+
+        /* 引入字体文件，并且给一个命名，方便下面调用 */
+        @font-face {
+            font-family: zk;
+            src: url("zk.ttf");
+        }
+
+        p {
+            font-family: zk;
+        }
+    </style>
+    <script src="jquery-3.7.1.min.js"></script>
+</head>
+
+<body>
+    <div class="main">
+        <div class="title">
+            error:<span>0</span>
+            score:<span>0</span>
+            <br>
+            <button>Open Game</button>
+        </div>
+        <ul>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+        <div>
+            <hr>
+            <p>该游戏可以使用鼠标点击来打地鼠，每点击一次，地鼠就会消失，当地鼠消失后，游戏结束。</p>
+            <p>也可以使用键盘数字键来打地鼠，每按一次，地鼠就会消失，当地鼠消失后，游戏结束。</p>
+        </div>
+        <div class="footer">
+            Copyright© 2023 By SouthAki
+            <br>
+            <a href="https://southaki.top/" style="color:black;" target="_blank" rel="nofollow">SouthAki的全世界</a>
+            <br>
+            <p id="RunTime" class="info"></p>
+        </div>
+    </div>
+
+    <script>
+        var error = 0
+        var score = 0
+        var timer
+        var timeout = 1000
+
+        // 点击按钮开始游戏
+        $('button').click(function () {
+            function gamestart() {
+                timer = setTimeout(function () {
+                    genarateMouse()
+                    timeout -= 20
+                    gamestart()
+                }, timeout)
+            }
+            gamestart()
+        })
+
+        // 游戏结束
+        function gameover() {
+            alert("Game Over")
+            // 清除计时器
+            clearInterval(timer)
+        }
+
+        // 随机生成
+        function genarateMouse() {
+            // not主要是找出没有打上class标签的元素
+            // 对应的是find，找出已经打上标签的元素
+            var emptyHole = $('ul li').not(".active")
+            if (emptyHole.length > 0) {
+                var randomIndex = Math.floor(Math.random() * emptyHole.length)
+                // 返回带有被选元素的指定索引号的元素
+                var randomHole = emptyHole.eq(randomIndex)
+                randomHole.addClass("active")
+                setTimeout(function () {
+                    if (randomHole.hasClass("active")) {
+                        randomHole.removeClass("active")
+                        error++
+                        $('div span').eq(0).text(error)
+                        if (error === 3) {
+                            gameover()
+                            window.location.reload()
+                        }
+                    }
+                    randomHole.removeClass("active")
+                }, 5000)
+            }
+            else {
+                // alert("jieshu")
+                gameover()
+            }
+        }
+
+        // // 鼠标点击事件
+        $('ul li').click(function () {
+            // 清除当前对象的class
+            $(this).removeClass('active')
+            score++
+            $('div span').eq(1).text(score)
+        })
+
+        // 键盘点击事件
+        function key() {
+            // console.log();
+            $('ul li').removeClass('active')
+            score++
+            $('div span').eq(1).text(score)
+        }
+
+        $(document).keydown(function (e) {
+            console.log(e.keyCode)
+            switch (e.keyCode) {
+                case 97:
+                    key();
+                    break;
+                case 98:
+                    key();
+                    break;
+                case 99:
+                    key();
+                    break;
+                case 100:
+                    key();
+                    break;
+                case 101:
+                    key();
+                    break;
+                case 102:
+                    key();
+                    break;
+                case 103:
+                    key();
+                    break;
+                case 104:
+                    key();
+                    break;
+                case 105:
+                    key();
+                    break;
+            }
+        })
+
+        // 定时器
+        // timer = setInterval(function(){
+        //     genarateMouse()
+        // },500);
+
+
+        // function gamestart() {
+        //     timer = setTimeout(function () {
+        //         genarateMouse()
+        //         timeout -= 20
+        //         gamestart()
+        //     }, timeout)
+        // }
+
+        // gamestart()
+
+        // 底标脚本
+        var BootDate = new Date("2023/12/29 09:00:00");
+        function ShowRunTime(id) {
+            var NowDate = new Date();
+            var RunDateM = parseInt(NowDate - BootDate);
+            var RunDays = Math.floor(RunDateM / (24 * 3600 * 1000));
+            var RunHours = Math.floor(RunDateM % (24 * 3600 * 1000) / (3600 * 1000));
+            var RunMinutes = Math.floor(RunDateM % (24 * 3600 * 1000) % (3600 * 1000) / (60 * 1000));
+            var RunSeconds = Math.round(RunDateM % (24 * 3600 * 1000) % (3600 * 1000) % (60 * 1000) / 1000);
+            var t = Math.trunc(234e8 + (NowDate - BootDate) / 1e3 * 17);
+            var a = (t / 1496e5).toFixed(6);
+            var RunTime = RunDays + "天" + RunHours + "时" + RunMinutes + "分" + RunSeconds + "秒";
+            document.getElementById(id).innerHTML = "页面已经运行了：" + RunTime + "，" + "现在旅行者一号距离地球" + t + "千米，约为" + a + "个天文单位🚀";
+        }
+        setInterval("ShowRunTime('RunTime')", 1000);
+    </script>
+</body>
+<!-- <script src="/jquery-3.7.1.min.js"></script> -->
+
+</html>
